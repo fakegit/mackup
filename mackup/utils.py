@@ -1,4 +1,5 @@
 """System static utilities being used by the modules."""
+
 import base64
 import os
 import platform
@@ -7,7 +8,6 @@ import stat
 import subprocess
 import sys
 import sqlite3
-from six.moves import input
 
 from . import constants
 
@@ -22,7 +22,7 @@ CAN_RUN_AS_ROOT = False
 
 def confirm(question):
     """
-    Ask the user if he really want something to happen.
+    Ask the user if he really wants something to happen.
 
     Args:
         question(str): What can happen
@@ -72,7 +72,7 @@ def copy(src, dst):
     """
     Copy a file or a folder (recursively) from src to dst.
 
-    For simplicity sake, both src and dst must be absolute path and must
+    For the sake of simplicity, both src and dst must be absolute path and must
     include the filename of the file or folder.
     Also do not include any trailing slash.
 
@@ -90,7 +90,7 @@ def copy(src, dst):
     assert os.path.exists(src)
     assert isinstance(dst, str)
 
-    # Create the path to the dst file if it does not exists
+    # Create the path to the dst file if it does not exist
     abs_path = os.path.dirname(os.path.abspath(dst))
     if not os.path.isdir(abs_path):
         os.makedirs(abs_path)
@@ -116,7 +116,7 @@ def link(target, link_to):
     """
     Create a link to a target file or a folder.
 
-    For simplicity sake, both target and link_to must be absolute path and must
+    For the sake of simplicity, both target and link_to must be absolute path and must
     include the filename of the file or folder.
     Also do not include any trailing slash.
 
@@ -133,7 +133,7 @@ def link(target, link_to):
     assert os.path.exists(target)
     assert isinstance(link_to, str)
 
-    # Create the path to the link if it does not exists
+    # Create the path to the link if it does not exist
     abs_path = os.path.dirname(os.path.abspath(link_to))
     if not os.path.isdir(abs_path):
         os.makedirs(abs_path)
@@ -251,34 +251,6 @@ def get_google_drive_folder_location():
         )
 
     return googledrive_home
-
-
-def get_copy_folder_location():
-    """
-    Try to locate the Copy folder.
-
-    Returns:
-        (str) Full path to the current Copy folder
-    """
-    copy_settings_path = "Library/Application Support/Copy Agent/config.db"
-    copy_home = None
-
-    copy_settings = os.path.join(os.environ["HOME"], copy_settings_path)
-
-    if os.path.isfile(copy_settings):
-        database = sqlite3.connect(copy_settings)
-        if database:
-            cur = database.cursor()
-            query = "SELECT value " "FROM config2 " "WHERE option = 'csmRootPath';"
-            cur.execute(query)
-            data = cur.fetchone()
-            copy_home = str(data[0])
-            cur.close()
-
-    if not copy_home:
-        error(constants.ERROR_UNABLE_TO_FIND_STORAGE.format(provider="Copy install"))
-
-    return copy_home
 
 
 def get_icloud_folder_location():

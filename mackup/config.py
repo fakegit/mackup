@@ -9,7 +9,6 @@ from .constants import (
     MACKUP_CONFIG_FILE,
     ENGINE_DROPBOX,
     ENGINE_GDRIVE,
-    ENGINE_COPY,
     ENGINE_ICLOUD,
     ENGINE_FS,
 )
@@ -17,7 +16,6 @@ from .constants import (
 from .utils import (
     error,
     get_dropbox_folder_location,
-    get_copy_folder_location,
     get_google_drive_folder_location,
     get_icloud_folder_location,
 )
@@ -29,7 +27,6 @@ except ImportError:
 
 
 class Config(object):
-
     """The Mackup Config class."""
 
     def __init__(self, filename=None):
@@ -68,7 +65,7 @@ class Config(object):
         """
         The engine used by the storage.
 
-        ENGINE_DROPBOX, ENGINE_GDRIVE, ENGINE_COPY, ENGINE_ICLOUD or ENGINE_FS.
+        ENGINE_DROPBOX, ENGINE_GDRIVE, ENGINE_ICLOUD or ENGINE_FS.
 
         Returns:
             str
@@ -139,7 +136,7 @@ class Config(object):
             filename (str) or None
 
         Returns:
-            SafeConfigParser
+            ConfigParser
         """
         assert isinstance(filename, str) or filename is None
 
@@ -147,7 +144,9 @@ class Config(object):
         if not filename:
             filename = MACKUP_CONFIG_FILE
 
-        parser = configparser.SafeConfigParser(allow_no_value=True)
+        parser = configparser.ConfigParser(
+            allow_no_value=True, inline_comment_prefixes=(";", "#")
+        )
         parser.read(os.path.join(os.path.join(os.environ["HOME"], filename)))
 
         return parser
@@ -189,7 +188,6 @@ class Config(object):
         if engine not in [
             ENGINE_DROPBOX,
             ENGINE_GDRIVE,
-            ENGINE_COPY,
             ENGINE_ICLOUD,
             ENGINE_FS,
         ]:
@@ -208,8 +206,6 @@ class Config(object):
             path = get_dropbox_folder_location()
         elif self.engine == ENGINE_GDRIVE:
             path = get_google_drive_folder_location()
-        elif self.engine == ENGINE_COPY:
-            path = get_copy_folder_location()
         elif self.engine == ENGINE_ICLOUD:
             path = get_icloud_folder_location()
         elif self.engine == ENGINE_FS:
@@ -279,7 +275,6 @@ class Config(object):
 
 
 class ConfigError(Exception):
-
     """Exception used for handle errors in the configuration."""
 
     pass
